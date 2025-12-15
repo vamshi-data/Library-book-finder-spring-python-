@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Library Book Finder with image</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f3f4f6;
+        }
+
+        /* 🔴 TOP LEFT NOTE */
+        .save-note {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: #dc2626;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 70px auto 30px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #e5e7eb;
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 12px 22px;
+            border-radius: 6px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        /* 🖼 BIG IMAGE LAYOUT */
+        .images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .img-box {
+            text-align: center;
+        }
+
+        .img-box img {
+            width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 2px solid #d1d5db;
+            background: #fff;
+        }
+
+        .result-box {
+            background: #eef2ff;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #c7d2fe;
+            white-space: pre-wrap;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .footer-form {
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .images {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔴 RED NOTE -->
+<div class="save-note">
+    Uploaded images are saved later can be deleted.
+</div>
+
+<div class="container">
+
+    <h2>📚 Library Book Finder</h2>
+
+    <!-- Upload -->
+    <div class="card">
+        <h3>Upload Book Image</h3>
+        <form th:action="@{/home/upload}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <!-- Algorithm -->
+    <div class="card">
+        <h3>Run OCR / ML Algorithm(time takes)</h3>
+        
+        <form th:action="@{/home/algo}" method="post">
+            <input type="hidden" name="bookId" th:value="${bookId}">
+            <input type="text" name="query" placeholder="ml algo starts" required>
+            <button type="submit">Run</button>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div th:if="${bookId != null}" class="card">
+        <h3>Processed Images</h3>
+
+        <div class="images">
+            <div class="img-box">
+                <b>Original Image</b>
+                <img th:src="@{/home/image/{id}(id=${bookId}, type='original')}">
+            </div>
+
+            <div class="img-box">
+                <b>Output Image</b>
+                <img th:src="@{/home/image/{id}(id=${bookId}, type='output')}">
+            </div>
+        </div>
+
+        <h3>Python Text Result</h3>
+        <div class="result-box" th:text="${searchResult}">
+            OCR output will appear here
+        </div>
+    </div>
+
+    <!-- Search Another -->
+    <div class="card footer-form">
+        <h3>Search Another Book in same Image</h3>
+        <form method="post" th:action="@{/home/check}">
+            <input type="hidden" name="bookId" th:value="${bookId}">
+            <input type="text" name="text" placeholder="find other book">
+            <button type="submit">Check</button>
+        </form>
+    </div>
+
+    <!-- Base64 Image -->
+    <div class="card" th:if="${outputImg}">
+        <h3>OCR Output (Base64)</h3>
+        <img style="width:100%; max-height:600px; object-fit:contain;"
+             th:src="'data:image/png;base64,' + ${outputImg}">
+    </div>
+<form th:action="@{/home/delete}" method="post"
+      onsubmit="return confirm('want to delete this image from database?');">
+    <input type="hidden" name="bookId" th:value="${bookId}">
+    <button type="submit"
+            style="background:#dc2626;color:white;padding:12px 22px;
+                   border:none;border-radius:6px;font-weight:bold;cursor:pointer;">
+        Delete Image
+    </button>
+</form>
+
+</div>
+
+</body>
+</html>

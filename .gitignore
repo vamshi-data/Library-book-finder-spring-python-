@@ -1,0 +1,25 @@
+# Java / Spring Boot
+/target/
+*.log
+*.class
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+
+# OCR outputs
+*.png
+*.jpg
+*.jpeg
