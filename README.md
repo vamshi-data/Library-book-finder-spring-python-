@@ -36,5 +36,4 @@ and search for English words inside scanned book pages using a Spring Boot backe
 
 ---
 
-## 🧠 System Architecture
 
